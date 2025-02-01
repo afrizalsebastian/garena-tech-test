@@ -28,3 +28,15 @@ class RegisterUserForm(forms.ModelForm):
         if commit:
             user.save()
         return user
+    
+class LoginUserForm(forms.Form):
+    username = forms.CharField(max_length=150, required=True)
+    password = forms.CharField(required=True)
+
+    @property
+    def get_username(self) -> str:
+        return self.cleaned_data.get('username')
+    
+    @property
+    def get_password(self) -> str:
+        return self.cleaned_data.get('password')
