@@ -25,6 +25,7 @@ class RegisterUserForm(forms.ModelForm):
         user = super().save(commit=False)
         password = self.cleaned_data.get('password')
         user.set_password(password)
+        user.generate_personal_ref_code()
         if commit:
             user.save()
         return user

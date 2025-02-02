@@ -4,6 +4,8 @@ from django.contrib.auth.models import (AbstractBaseUser, BaseUserManager,
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 
+from .utils import generate_referral_code
+
 
 class UserManager(BaseUserManager):
     def create_user(self, username, email, password, name, **extra_fields):
@@ -47,7 +49,7 @@ class User(AbstractBaseUser, PermissionsMixin):
             "username": self.username,
             "email": self.email,
             "name": self.name,
-            "ref_code": self.referral_code if self.referral_code else None,
+            "my_referral_code": self.own_code if self.own_code else None,
         }
 
     def set_password(self, raw_password):
@@ -55,3 +57,6 @@ class User(AbstractBaseUser, PermissionsMixin):
 
     def check_password(self, raw_password):
         return bcrypt.checkpw(raw_password.encode('utf-8'), self.password.encode('utf-8'))
+    
+    def generate_personal_ref_code(self):
+        self.own_code = generate_referral_code(self.username)

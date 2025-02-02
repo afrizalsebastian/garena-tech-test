@@ -13,7 +13,6 @@ from .form import LoginUserForm, RegisterUserForm
 
 
 # Create your views here.
-@csrf_exempt
 @require_http_methods(['POST'])
 def regiter_user(request):
   try:
@@ -43,7 +42,6 @@ def regiter_user(request):
         "error": { "message": "Internal Server Error" }
       }, status=500)
   
-@csrf_exempt
 @require_http_methods(['POST'])
 def login(request):
   try:
@@ -51,13 +49,10 @@ def login(request):
     login_form = LoginUserForm(body)
 
     if login_form.is_valid():
-      print(f"MASUK SINI")
       user = authenticate(username=login_form.get_username, password=login_form.get_password)
-      print("SETELAH AUTHENTICATE")
       if user:
         claims = {
-          "id": user.id,
-          "username": user.username,
+          "user_id": user.id,
           "exp": datetime.now(tz=timezone.utc) + timedelta(hours=6),
           "iat": datetime.now(tz=timezone.utc)
         }
@@ -88,4 +83,3 @@ def login(request):
         "status": False,
         "error": { "message": "Internal Server Error" }
       }, status=500)
-
