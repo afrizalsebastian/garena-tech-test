@@ -1,6 +1,7 @@
 import os
 
 import requests as fetch
+from django.core.cache import cache
 from django.http import JsonResponse
 from dotenv import load_dotenv
 
@@ -20,6 +21,15 @@ def get_heroes(request):
       "status": False,
       "error": { "message" : f"partial heroes name required in query params" }
     }, status=400)
+  
+  cahce_key = request.get_full_path()
+  print(cahce_key)
+  cache_data = cache.get(cahce_key)
+  if cache_data:
+    return JsonResponse({
+      "status": True,
+      "data": cache_data,
+    })
 
   try:
     heroes_url = str(os.getenv('HEROES_BASE_URL'))
@@ -37,6 +47,7 @@ def get_heroes(request):
         }, status=404)
 
       hero_detail = hero_item[1]
+      cache.set(cahce_key, hero_detail, timeout=60 * 60 * 2) ## Two Hours
       return JsonResponse({
         "status": True,
         "data": hero_detail,
