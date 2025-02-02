@@ -22,16 +22,15 @@ def get_heroes(request):
       "error": { "message" : f"partial heroes name required in query params" }
     }, status=400)
   
-  cahce_key = request.get_full_path()
-  print(cahce_key)
-  cache_data = cache.get(cahce_key)
-  if cache_data:
-    return JsonResponse({
-      "status": True,
-      "data": cache_data,
-    })
-
   try:
+    cahce_key = request.get_full_path()
+    cache_data = cache.get(cahce_key)
+    if cache_data:
+      return JsonResponse({
+        "status": True,
+        "data": cache_data,
+      })
+
     heroes_url = str(os.getenv('HEROES_BASE_URL'))
     response = fetch.get(heroes_url)
 
