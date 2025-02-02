@@ -33,8 +33,8 @@ class User(AbstractBaseUser, PermissionsMixin):
     password = models.TextField(_('password'))
     email = models.EmailField(_('email'), max_length=255, unique=True)
     name = models.CharField(_('fullname'), max_length=255)
-    own_code = models.CharField(_('refferal_code'), max_length=10, db_collation='utf8_bin')
-    referral_code = models.CharField(_('refferal_code'), max_length=10, db_collation='utf8_bin')
+    own_code = models.CharField(_('refferal_code'), max_length=10, db_collation='utf8_bin') # code case sensitive
+    referral_code = models.CharField(_('refferal_code'), max_length=10, db_collation='utf8_bin') # code case sensitive
 
     USERNAME_FIELD='username'
     REQUIRED_FIELDS = ['password', 'name', 'email']
