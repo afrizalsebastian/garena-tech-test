@@ -23,6 +23,7 @@ urlpatterns = [
     path('api/', include([
         path('status/', views.check_status, name='status'),
         path('', include('users.urls'), name='users'),
+        path('', include('heroes.urls'), name='heros')
     ]), name='apps'),
     # path('admin/', admin.site.urls),
 ]
