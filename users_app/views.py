@@ -6,16 +6,21 @@ from django.conf import settings
 from django.contrib.auth import authenticate
 from django.core.exceptions import ValidationError
 from django.http import JsonResponse
-from django.views.decorators.csrf import csrf_exempt
-from django.views.decorators.http import require_http_methods
 
-from .form import LoginUserForm, RegisterUserForm
+from .form import LoginUserForm, RegisterUserForm, UpdateUserForm
 
 
-# Create your views here.
-@require_http_methods(['POST'])
 def regiter_user(request):
+  if request.method != 'POST':
+    return JsonResponse({
+        "status": False,  
+        "data": { "message": "Method not allowed"}
+      }, status=405)
+
   try:
+    if not request.body:
+      raise ValidationError("Required body request")
+
     body = json.loads(request.body)
     register_form = RegisterUserForm(body)
 
@@ -36,15 +41,24 @@ def regiter_user(request):
         "status": False,  
         "error": { "message": e.message}
       }, status=400)
+  
   except Exception as e:
     return JsonResponse({
         "status": False,
         "error": { "message": "Internal Server Error" }
       }, status=500)
-  
-@require_http_methods(['POST'])
+
 def login(request):
+  if request.method != 'POST':
+    return JsonResponse({
+        "status": False,  
+        "data": { "message": "Method not allowed"}
+      }, status=405)
+  
   try:
+    if not request.body:
+      raise ValidationError("Required body request")
+
     body = json.loads(request.body)
     login_form = LoginUserForm(body)
 
@@ -78,6 +92,51 @@ def login(request):
         "status": False,  
         "error": { "message": e.message}
       }, status=400)
+      
+  except Exception as e:
+    return JsonResponse({
+        "status": False,
+        "error": { "message": "Internal Server Error" }
+      }, status=500)
+  
+def update_user(request):
+  if request.method != 'PUT':
+    return JsonResponse({
+        "status": False,  
+        "data": { "message": "Method not allowed"}
+      }, status=405)
+  
+  try:
+    if not request.body:
+      raise ValidationError("Required body request")
+
+    body = json.loads(request.body)
+    if request.user.is_authenticated:
+      update_form = UpdateUserForm(body)
+      if update_form.is_valid():
+        user = update_form.save(request.user)
+        return JsonResponse({
+          "status": True,  
+          "data": user.to_dict()
+        }, status=200)
+      else:
+        errors_message = ''
+        for field, errors in update_form.errors.items():
+          errors_message += '{}: {} '.format(field, ','.join(errors))
+        raise ValidationError(errors_message)
+      
+    else:
+        return JsonResponse({
+          "status": False,
+          "error": { "message": request.auth_err_message }
+        }, status=401)
+    
+  except ValidationError as e:
+    return JsonResponse({
+        "status": False,  
+        "error": { "message": e.message}
+      }, status=400)
+  
   except Exception as e:
     return JsonResponse({
         "status": False,
