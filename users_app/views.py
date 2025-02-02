@@ -7,9 +7,13 @@ from django.contrib.auth import authenticate
 from django.core.exceptions import ValidationError
 from django.http import JsonResponse
 
-from .form import LoginUserForm, RegisterUserForm, UpdateUserForm
+from .form import (InputReferralCode, LoginUserForm, RegisterUserForm,
+                   UpdateUserForm)
 
 
+##############
+## REGISTER ##
+##############
 def regiter_user(request):
   if request.method != 'POST':
     return JsonResponse({
@@ -48,6 +52,9 @@ def regiter_user(request):
         "error": { "message": "Internal Server Error" }
       }, status=500)
 
+###########
+## LOGIN ##
+###########
 def login(request):
   if request.method != 'POST':
     return JsonResponse({
@@ -99,6 +106,9 @@ def login(request):
         "error": { "message": "Internal Server Error" }
       }, status=500)
   
+############
+## UPDATE ##
+############
 def update_user(request):
   if request.method != 'PUT':
     return JsonResponse({
@@ -131,6 +141,57 @@ def update_user(request):
           "error": { "message": request.auth_err_message }
         }, status=401)
     
+  except ValidationError as e:
+    return JsonResponse({
+        "status": False,  
+        "error": { "message": e.message}
+      }, status=400)
+  
+  except Exception as e:
+    return JsonResponse({
+        "status": False,
+        "error": { "message": "Internal Server Error" }
+      }, status=500)
+
+#####################
+## INSERT REFERRAL ##
+#####################
+def insert_referral(request):
+  if request.method != 'PUT':
+    return JsonResponse({
+        "status": False,  
+        "data": { "message": "Method not allowed"}
+      }, status=405)
+  
+  try:
+    if not request.body:
+      raise ValidationError("Required body request")
+
+    body = json.loads(request.body)
+    if request.user.is_authenticated:
+      insert_form = InputReferralCode(body)
+      if insert_form.is_valid():
+
+        if request.user.own_code == body['referral_code']:
+          raise ValidationError('Referral code can\'t use own code.')
+
+        insert_form.save(instance=request.user)
+        return JsonResponse({
+          "status": True,  
+          "data": { "message": "Referral code suscessfully used."}
+        }, status=200)
+      else:
+        errors_message = ''
+        for field, errors in insert_form.errors.items():
+          errors_message += '{}: {} '.format(field, ','.join(errors))
+        raise ValidationError(errors_message)
+      
+    else:
+      return JsonResponse({
+          "status": False,
+          "error": { "message": request.auth_err_message }
+        }, status=401)
+
   except ValidationError as e:
     return JsonResponse({
         "status": False,  

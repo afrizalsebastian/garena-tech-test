@@ -60,3 +60,19 @@ class User(AbstractBaseUser, PermissionsMixin):
     
     def generate_personal_ref_code(self):
         self.own_code = generate_referral_code(self.username)
+
+    def set_referral_code(self, referral_code):
+        self.referral_code = referral_code
+
+    @staticmethod
+    def is_username_exists(username: str):
+        return User.objects.filter(username=username).exists()
+    
+    @staticmethod
+    def is_email_exists(email: str):
+        return User.objects.filter(email=email).exists()
+
+    @staticmethod
+    def is_referral_code_exists(referral_code: str):
+        return User.objects.filter(own_code__exact=referral_code).exists()
+        
