@@ -1,0 +1,237 @@
+{
+	"info": {
+		"_postman_id": "3c101fd8-d1f5-4ce8-983b-a1d633d77dc8",
+		"name": "Garena Test",
+		"description": "Garena Technical Test Endpoint Documentation",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "29345756",
+		"_collection_link": "https://www.postman.com/descent-module-engineer-54466928/workspace/public/collection/29345756-3c101fd8-d1f5-4ce8-983b-a1d633d77dc8?action=share&source=collection_link&creator=29345756"
+	},
+	"item": [
+		{
+			"name": "Register",
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"email\": \"user@mail.com\",\n    \"password\": \"password@test\",\n    \"name\": \"User Satu\",\n    \"username\": \"usersatu\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:8000/api/register/",
+					"host": [
+						"localhost"
+					],
+					"port": "8000",
+					"path": [
+						"api",
+						"register",
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Login",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"const token = pm.response.json()?.data?.token",
+							"if (token) {",
+							"    pm.environment.set('token', token)",
+							"}"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"password\": \"password@test\",\n    \"username\": \"usersatu\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:8000/api/login/",
+					"host": [
+						"localhost"
+					],
+					"port": "8000",
+					"path": [
+						"api",
+						"login",
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Edit User",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    // \"username\": \"userlagi\",\n    // \"name\": \"User Dua\",\n    // \"email\": \"mailupdate@mail.com\",\n    \"password\": \"password@baru\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:8000/api/edit_profile/",
+					"host": [
+						"localhost"
+					],
+					"port": "8000",
+					"path": [
+						"api",
+						"edit_profile",
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Insert Referral",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"referral_code\": \"QABzWkmckl\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:8000/api/input_ref/",
+					"host": [
+						"localhost"
+					],
+					"port": "8000",
+					"path": [
+						"api",
+						"input_ref",
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Find Users",
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "localhost:8000/api/find_user/?query=dua",
+					"host": [
+						"localhost"
+					],
+					"port": "8000",
+					"path": [
+						"api",
+						"find_user",
+						""
+					],
+					"query": [
+						{
+							"key": "rows",
+							"value": "1",
+							"disabled": true
+						},
+						{
+							"key": "page",
+							"value": "2",
+							"disabled": true
+						},
+						{
+							"key": "query",
+							"value": "dua"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Heroes",
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "localhost:8000/api/heroes/?query=aatro",
+					"host": [
+						"localhost"
+					],
+					"port": "8000",
+					"path": [
+						"api",
+						"heroes",
+						""
+					],
+					"query": [
+						{
+							"key": "query",
+							"value": "aatro"
+						}
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
